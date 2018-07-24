@@ -35,7 +35,9 @@ def dataDownload():
 
 def monteCarloSimulation(pokemon_dictionary):
     """This runs through one run of the simulation. This is the part of the program that must be repeated in order to
-    make it a Monte Carlo simulation."""
+    make it a Monte Carlo simulation.
+    Doctests will go here.
+    """
 
     number_of_pokemon = len(pokemon_dictionary)
 
