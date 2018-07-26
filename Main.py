@@ -113,8 +113,17 @@ for i in range(10000):
     total_step_counter = monteCarloSimulation(poke_dict)
     all_step_list.append(total_step_counter)
 
+sorted_list = sorted(all_step_list)
+top_ninety_percent = sorted_list[-1000]
+max_ten_percent = sum(sorted_list[-1000:]) / len(sorted_list[-1000:])
+print()
+print('top 90% starting point:', top_ninety_percent, 'steps')
+print('average of top 90%:', max_ten_percent, 'steps')
+
 average = sum(all_step_list) / len(all_step_list)
 max = max(all_step_list)
 min = min(all_step_list)
-print('average:', average, 'max:', max, 'min:', min)
+print()
+print('overall average:', average, 'max:', max, 'min:', min)
 print('average steps per pokemon:', average/len(poke_dict))
+
