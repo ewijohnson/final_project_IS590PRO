@@ -108,14 +108,17 @@ poke_dict = dataDownload()
 
 #print(poke_dict)
 
+number_of_simulations = 10000
+ten_percent = int(number_of_simulations * .1)
+
 all_step_list = []
-for i in range(10000):
+for i in range(number_of_simulations):
     total_step_counter = monteCarloSimulation(poke_dict)
     all_step_list.append(total_step_counter)
 
 sorted_list = sorted(all_step_list)
-top_ninety_percent = sorted_list[-1000]
-max_ten_percent = sum(sorted_list[-1000:]) / len(sorted_list[-1000:])
+top_ninety_percent = sorted_list[-ten_percent]
+max_ten_percent = sum(sorted_list[-ten_percent:]) / len(sorted_list[-ten_percent:])
 print()
 print('top 90% starting point:', top_ninety_percent, 'steps')
 print('average of top 90%:', max_ten_percent, 'steps')
