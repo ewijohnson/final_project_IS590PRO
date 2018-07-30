@@ -10,11 +10,11 @@ import random
 #   freely move around all areas per location
 
 # Fine for now:
-# Route 2-9, 22, Santalune Forest, Glittering Cave, Connecting Cave, Reflection Cave, Terminus Cave, Frost Cavern,
+# Route 2-22, Santalune Forest, Glittering Cave, Connecting Cave, Reflection Cave, Terminus Cave, Frost Cavern,
 #   Azure Bay, Pokemon Village, Lost Hotel
 
 # Places with Issues:
-#   Route 19 (SWAMP after Horde Encounters), Victory Road (2 different Horde Encounters)
+#   Victory Road (2 different Horde Encounters)
 
 
 def dataDownload(route_num):
@@ -40,9 +40,15 @@ def dataDownload(route_num):
     pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/text()"
                          "[following::th/a[@title='Horde Encounter']]")
 
+    # Only used for some cases, will be empty otherwise if there are no Swamp Pokemon
     swamp_pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/text()"
                          "[preceding::th/a/span[text()='Swamp']]")
 
+    # This is added for Route 19, where the XML for the Swamp Pokemon is different than other webpages
+    if not swamp_pokemon:
+        swamp_pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/text()"
+                         "[preceding::th[@style='background: #BDA595; color: #573118']]")
+    # This is added for the cases where there are no Horde Encounters, and therefore the first XPath won't return results
     if not pokemon:
         pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/"
                                  "text()")
@@ -50,8 +56,14 @@ def dataDownload(route_num):
 
     rates = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td[@colspan='4']/text()")
 
+    # As with swamp_pokemon, only used if there are Swamp Pokemon
     swamp_rates = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td[@colspan='4']/text()"
                              "[preceding::th/a/span[text()='Swamp']]")
+
+    # For Route 19 again, where the Swamp XML is different:
+    if not swamp_rates:
+        swamp_rates = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td[@colspan='4']/text()"
+            "[preceding::th[@style='background: #BDA595; color: #573118']]")
 
     print(rates)
     print(swamp_rates)
