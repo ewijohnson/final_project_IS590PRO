@@ -10,52 +10,63 @@ import random
 #   freely move around all areas per location
 
 # Fine for now:
-# Route 2-9, 22, Santalune Forest, Glittering Cave, Connecting Cave, Reflection Cave, Terminus Cave, Frost Cavern
+# Route 2-9, 22, Santalune Forest, Glittering Cave, Connecting Cave, Reflection Cave, Terminus Cave, Frost Cavern,
+#   Azure Bay, Pokemon Village, Lost Hotel
 
 # Places with Issues:
-#   Route 10-21, Azure Bay, Lost Hotel
-#       Pokemon Village, Victory Road same as R 5 (IndexError) - two slightly different reasons though(one with 'rate'
-#       one with join)
+#   Route 14, 19 (SWAMP after Horde Encounters), Victory Road (2 different Horde Encounters)
 
 
-def dataDownload():
+def dataDownload(route_num):
     """This function gets the relevant information on Pokemon encounters and encounter rates from the Bulbapedia
     webpage that lists this information."""
 
-    url = 'https://bulbapedia.bulbagarden.net/wiki/Frost_Cavern'
+
+    #url = 'https://bulbapedia.bulbagarden.net/wiki/Kalos_Route_' + route_num
+    url = 'https://bulbapedia.bulbagarden.net/wiki/Lost_Hotel'
     page = requests.get(url)
     tree = html.fromstring(page.content)
 
     title = tree.xpath("//h1[@id='firstHeading']/text()")
+    print()
+    print('----------------------')
+    print()
     print(title[0])
+
+
 
     # Excludes all Pokemon after the 'Horde Encounter' banner in the tables, extracts all preceding Pokemon, environment
     #   types, and rates of encounter.
     pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/text()"
                          "[following::th/a[@title='Horde Encounter']]")
-    print('pokemon1', pokemon)
+
     if not pokemon:
         pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/"
-                             "text()")
+                                 "text()")
+
 
     rates = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td[@colspan='4']/text()")
 
+
+
+
     cleaned_pokemon_list = []
-    print('@@@@@@@', pokemon)
+
     for i, environment in enumerate(pokemon):
 
-        if environment in ['Fishing', 'Surfing', 'Ceiling', 'Rock\xa0Smash']:
+        if environment in ['Fishing', 'Surfing', 'Ceiling', 'Rock\xa0Smash', 'Shaking trash cans']:
 
             del pokemon[i-1]
 
 
 
 
-    print('!!!!!!!', pokemon)
+
 
     for environment in pokemon:
         if environment not in ['Surfing', 'Fishing', 'Grass', 'Yellow flowers', 'Red flowers', 'Purple flowers',
-                               'Tall grass', 'Cave', 'Ceiling', 'Rock\xa0Smash']:
+                               'Tall grass', 'Cave', 'Ceiling', 'Rock\xa0Smash', 'Terrain', 'Dirt', 'Swamp', 'Snow',
+                               'Shaking trash cans']:
             cleaned_pokemon_list.append(environment)
 
 
@@ -65,20 +76,19 @@ def dataDownload():
     #     combined_pokemon = pokemon[i] + '-' + pokemon[i + 1]
     #     combined_pokemon_list.append(combined_pokemon)
 
-
     poke_rate_dict = {}
     poke_counter = 0
 
-    print('^^^^', cleaned_pokemon_list)
-    print('&&&', rates)
+
     for rate in rates:
         rate = (rate.strip().strip('%'))
         try:
             rate = int(rate)
-        # This stops the calculations when the Horde Encounters start
+
+
         except ValueError:
-            break
-        print('***', rate)
+            pass
+
         # This accounts for different 'variations' of the same Pokemon that have different encounter rates.
         #   All variations of a Pokemon are considered to be the same Pokemon, as supported by the game (one
         #   'Pokedex' (an in-game Pokemon database) entry per Pokemon, including all variations).
@@ -99,8 +109,6 @@ def dataDownload():
     #         del poke_rate_dict[pokemon]
     #     elif 'Rustling bush' in pokemon:
     #         del poke_rate_dict[pokemon]
-
-    print(poke_rate_dict)
 
     return poke_rate_dict
 
@@ -138,29 +146,31 @@ def monteCarloSimulation(pokemon_dictionary):
     return step_counter
 
 
-poke_dict = dataDownload()
+for route_number in range(14, 15):
+    route_number = str(route_number)
+    poke_dict = dataDownload(route_number)
 
-print(poke_dict)
+    print(poke_dict)
 
-number_of_simulations = 10000
-ten_percent = int(number_of_simulations * .1)
+    number_of_simulations = 10000
+    ten_percent = int(number_of_simulations * .1)
 
-all_step_list = []
-for i in range(number_of_simulations):
-    total_step_counter = monteCarloSimulation(poke_dict)
-    all_step_list.append(total_step_counter)
+    all_step_list = []
+    for i in range(number_of_simulations):
+        total_step_counter = monteCarloSimulation(poke_dict)
+        all_step_list.append(total_step_counter)
 
-sorted_list = sorted(all_step_list)
-top_ninety_percent = sorted_list[-ten_percent]
-max_ten_percent = sum(sorted_list[-ten_percent:]) / len(sorted_list[-ten_percent:])
-print()
-print('top 90%:', top_ninety_percent, 'steps')
-print('average of top 90%:', max_ten_percent, 'steps')
+    sorted_list = sorted(all_step_list)
+    top_ninety_percent = sorted_list[-ten_percent]
+    max_ten_percent = sum(sorted_list[-ten_percent:]) / len(sorted_list[-ten_percent:])
+    print()
+    print('top 90%:', top_ninety_percent, 'steps')
+    print('average of top 90%:', max_ten_percent, 'steps')
 
-average = sum(all_step_list) / len(all_step_list)
-max = max(all_step_list)
-min = min(all_step_list)
-print()
-print('overall average:', average, 'max:', max, 'min:', min)
-print('average steps per pokemon:', average/len(poke_dict))
+    average = sum(all_step_list) / len(all_step_list)
+    maximum = max(all_step_list)
+    minimum = min(all_step_list)
+    print()
+    print('overall average:', average, 'max:', maximum, 'min:', minimum)
+    print('average steps per pokemon:', average/len(poke_dict))
 
