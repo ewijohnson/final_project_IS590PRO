@@ -14,7 +14,7 @@ import random
 #   Azure Bay, Pokemon Village, Lost Hotel
 
 # Places with Issues:
-#   Route 14, 19 (SWAMP after Horde Encounters), Victory Road (2 different Horde Encounters)
+#   Route 19 (SWAMP after Horde Encounters), Victory Road (2 different Horde Encounters)
 
 
 def dataDownload(route_num):
@@ -23,7 +23,7 @@ def dataDownload(route_num):
 
 
     #url = 'https://bulbapedia.bulbagarden.net/wiki/Kalos_Route_' + route_num
-    url = 'https://bulbapedia.bulbagarden.net/wiki/Lost_Hotel'
+    url = 'https://bulbapedia.bulbagarden.net/wiki/Kalos_Route_19'
     page = requests.get(url)
     tree = html.fromstring(page.content)
 
@@ -40,6 +40,9 @@ def dataDownload(route_num):
     pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/text()"
                          "[following::th/a[@title='Horde Encounter']]")
 
+    swamp_pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/text()"
+                         "[preceding::th/a/span[text()='Swamp']]")
+
     if not pokemon:
         pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/"
                                  "text()")
@@ -47,8 +50,13 @@ def dataDownload(route_num):
 
     rates = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td[@colspan='4']/text()")
 
+    swamp_rates = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td[@colspan='4']/text()"
+                             "[preceding::th/a/span[text()='Swamp']]")
 
-
+    print(rates)
+    print(swamp_rates)
+    print(pokemon)
+    print(swamp_pokemon)
 
     cleaned_pokemon_list = []
 
@@ -58,7 +66,11 @@ def dataDownload(route_num):
 
             del pokemon[i-1]
 
+    if swamp_pokemon:
+        for i, environment in enumerate(swamp_pokemon):
 
+            if environment in ['Fishing', 'Surfing', 'Ceiling', 'Rock\xa0Smash', 'Shaking trash cans']:
+                del swamp_pokemon[i - 1]
 
 
 
@@ -69,6 +81,14 @@ def dataDownload(route_num):
                                'Shaking trash cans']:
             cleaned_pokemon_list.append(environment)
 
+    cleaned_swamp_pokemon_list = []
+    if swamp_pokemon:
+        for environment in swamp_pokemon:
+            if environment not in ['Surfing', 'Fishing', 'Grass', 'Yellow flowers', 'Red flowers', 'Purple flowers',
+                                   'Tall grass', 'Cave', 'Ceiling', 'Rock\xa0Smash', 'Terrain', 'Dirt', 'Swamp', 'Snow',
+                                   'Shaking trash cans']:
+                cleaned_swamp_pokemon_list.append(environment)
+
 
     # combined_pokemon_list = []
     # # Combines Pokemon name with environment type
@@ -77,8 +97,9 @@ def dataDownload(route_num):
     #     combined_pokemon_list.append(combined_pokemon)
 
     poke_rate_dict = {}
-    poke_counter = 0
 
+
+    poke_counter = 0
 
     for rate in rates:
         rate = (rate.strip().strip('%'))
@@ -99,6 +120,30 @@ def dataDownload(route_num):
         except KeyError:
             poke_rate_dict[(cleaned_pokemon_list[poke_counter])] = rate
         poke_counter += 1
+
+    if swamp_pokemon:
+
+        poke_counter = 0
+
+        for rate in swamp_rates:
+            rate = (rate.strip().strip('%'))
+            try:
+                rate = int(rate)
+
+
+            except ValueError:
+                pass
+
+            # This accounts for different 'variations' of the same Pokemon that have different encounter rates.
+            #   All variations of a Pokemon are considered to be the same Pokemon, as supported by the game (one
+            #   'Pokedex' (an in-game Pokemon database) entry per Pokemon, including all variations).
+            try:
+                poke_rate_dict[(cleaned_swamp_pokemon_list[poke_counter])] += rate
+            except IndexError:
+                pass
+            except KeyError:
+                poke_rate_dict[(cleaned_swamp_pokemon_list[poke_counter])] = rate
+            poke_counter += 1
 
     # for pokemon in combined_pokemon_list:
     #     if 'Fishing' in pokemon:
