@@ -16,9 +16,14 @@ import random
 
 
 def dataDownload(location_name):
-    """This function gets the relevant information on Pokemon encounters and encounter rates from the Bulbapedia
-    webpage that lists this information."""
+    """
+    This function gets the relevant information on Pokemon encounters and encounter rates from the Bulbapedia
+    webpage. Returns poke_rate_dict, a dictionary that contains each Pokemon that can be found in the area and its rate
+    of encounter.
 
+    :param location_name:
+    :return:
+    """
 
     url = 'https://bulbapedia.bulbagarden.net/wiki/' + location_name
     page = requests.get(url)
@@ -29,8 +34,6 @@ def dataDownload(location_name):
     print('----------------------')
     print()
     print(title[0])
-
-
 
     # Excludes all Pokemon after the 'Horde Encounter' banner in the tables, extracts all preceding Pokemon, environment
     #   types, and rates of encounter.
@@ -67,23 +70,15 @@ def dataDownload(location_name):
         swamp_rates = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td[@colspan='4']/"
                                  "text()[preceding::th[@style='background: #BDA595; color: #573118']]")
 
-
     cleaned_pokemon_list = []
-
     for i, environment in enumerate(pokemon):
-
         if environment in ['Fishing', 'Surfing', 'Ceiling', 'Rock\xa0Smash', 'Rustling bush', 'Shaking trash cans']:
-
             del pokemon[i-1]
 
     if swamp_pokemon:
         for i, environment in enumerate(swamp_pokemon):
-
             if environment in ['Fishing', 'Surfing', 'Ceiling', 'Rock\xa0Smash', 'Rustling bush', 'Shaking trash cans']:
                 del swamp_pokemon[i - 1]
-
-
-
 
     for environment in pokemon:
         if environment not in ['Surfing', 'Fishing', 'Grass', 'Yellow flowers', 'Red flowers', 'Purple flowers',
@@ -99,18 +94,13 @@ def dataDownload(location_name):
                                    'Rustling bush', 'Shaking trash cans']:
                 cleaned_swamp_pokemon_list.append(environment)
 
-
     poke_rate_dict = {}
 
-
     poke_counter = 0
-
     for rate in rates:
         rate = (rate.strip().strip('%'))
         try:
             rate = int(rate)
-
-
         except ValueError:
             pass
 
@@ -126,15 +116,11 @@ def dataDownload(location_name):
         poke_counter += 1
 
     if swamp_pokemon:
-
         poke_counter = 0
-
         for rate in swamp_rates:
             rate = (rate.strip().strip('%'))
             try:
                 rate = int(rate)
-
-
             except ValueError:
                 pass
 
@@ -149,15 +135,17 @@ def dataDownload(location_name):
                 poke_rate_dict[(cleaned_swamp_pokemon_list[poke_counter])] = rate
             poke_counter += 1
 
-
-    return poke_rate_dict
-
+    return poke_rate_dict, title[0]
 
 
-def monteCarloSimulation(pokemon_dictionary):
-    """This runs through one run of the simulation. This is the part of the program that must be repeated in order to
-    make it a Monte Carlo simulation.
-    Doctests will go here.
+def singleRunThrough(pokemon_dictionary, outfile, sim_number):
+    """
+    This function computes one single run through as part of the entire simulation.
+
+    :param pokemon_dictionary:
+    :param outfile:
+    :param sim_number:
+    :return:
     """
 
     number_of_pokemon = len(pokemon_dictionary)
@@ -170,7 +158,6 @@ def monteCarloSimulation(pokemon_dictionary):
     step_counter = 0
     pokemon_encountered = []
 
-
     while len(pokemon_encountered) < number_of_pokemon:
 
         # The range of steps before the next Pokemon encounter
@@ -182,74 +169,98 @@ def monteCarloSimulation(pokemon_dictionary):
         if poke_choice not in pokemon_encountered:
             pokemon_encountered.append(poke_choice)
 
-    #print(step_counter, pokemon_encountered)
+    print(str(sim_number + 1) + '. ' + 'Total steps:', step_counter, file=outfile)
+    print('    ' + 'Pokemon in order of first encounter:', pokemon_encountered, file=outfile)
+
     return step_counter
 
 
-location_names = ['Kalos_Route_', 'Santalune_Forest', 'Glittering_Cave', 'Connecting_Cave', 'Reflection_Cave',
-                  'Terminus_Cave', 'Frost_Cavern', 'Azure_Bay', 'Pokemon_Village', 'Lost_Hotel', 'Victory_Road_(Kalos)']
+def calculateSteps(number_of_sims, poke_dictionary, location_name):
+    """
+    This function calculates the number of steps by computing x number of single runs.
 
-print()
-print('Kalos Route 1 has no wild Pokemon.')
+    :param number_of_sims:
+    :param poke_dictionary:
+    :param location_name:
+    :return:
+    """
 
-for location in location_names:
-    if location == 'Kalos_Route_':
-        for route in range(2, 23):
-            route = str(route)
-            area = location + route
-            poke_dict = dataDownload(area)
-
-            print(poke_dict)
-
-            # This part repeats
-            number_of_simulations = 10000
-            ten_percent = int(number_of_simulations * .1)
-
-            all_step_list = []
-            for i in range(number_of_simulations):
-                total_step_counter = monteCarloSimulation(poke_dict)
-                all_step_list.append(total_step_counter)
-
-            sorted_list = sorted(all_step_list)
-            top_ninety_percent = sorted_list[-ten_percent]
-            max_ten_percent = sum(sorted_list[-ten_percent:]) / len(sorted_list[-ten_percent:])
-            print()
-            print('top 90%:', top_ninety_percent, 'steps')
-            print('average of top 90%:', max_ten_percent, 'steps')
-
-            average = sum(all_step_list) / len(all_step_list)
-            maximum = max(all_step_list)
-            minimum = min(all_step_list)
-            print()
-            print('overall average:', average, 'max:', maximum, 'min:', minimum)
-            print('average steps per pokemon:', average / len(poke_dict))
-
-
-    else:
-        area = location
-        poke_dict = dataDownload(area)
-
-        print(poke_dict)
-
-        # This part repeats
-        number_of_simulations = 10000
-        ten_percent = int(number_of_simulations * .1)
-
+    file_name = '_'.join(location_name.split())
+    with open(file_name + '.txt', 'w') as f:
+        print('')
+        print(location_name, file=f)
         all_step_list = []
-        for i in range(number_of_simulations):
-            total_step_counter = monteCarloSimulation(poke_dict)
+        for i in range(number_of_sims):
+            total_step_counter = singleRunThrough(poke_dictionary, f, i)
             all_step_list.append(total_step_counter)
 
-        sorted_list = sorted(all_step_list)
-        top_ninety_percent = sorted_list[-ten_percent]
-        max_ten_percent = sum(sorted_list[-ten_percent:]) / len(sorted_list[-ten_percent:])
-        print()
-        print('top 90%:', top_ninety_percent, 'steps')
-        print('average of top 90%:', max_ten_percent, 'steps')
+        printStats(all_step_list, number_of_sims, poke_dictionary, f)
 
-        average = sum(all_step_list) / len(all_step_list)
-        maximum = max(all_step_list)
-        minimum = min(all_step_list)
-        print()
-        print('overall average:', average, 'max:', maximum, 'min:', minimum)
-        print('average steps per pokemon:', average / len(poke_dict))
+
+def printStats(all_steps, sim_number, p_dict, location_file):
+    """
+    This function calculates and prints all the statistics to separate files.
+
+    :param all_steps:
+    :param sim_number:
+    :param p_dict:
+    :param location_file:
+    :return:
+    """
+    ten_percent = int(sim_number * .1)
+    sorted_list = sorted(all_steps)
+    top_ninety_percent = sorted_list[-ten_percent]
+    max_ten_percent = sum(sorted_list[-ten_percent:]) / len(sorted_list[-ten_percent:])
+    print('\n', file=location_file)
+    print('top 90%:', top_ninety_percent, 'steps', file=location_file)
+    print('average of top 90%:', max_ten_percent, 'steps', file=location_file)
+
+    average = sum(all_steps) / len(all_steps)
+    maximum = max(all_steps)
+    minimum = min(all_steps)
+    print('\n', file=location_file)
+    print('overall average:', average, 'max:', maximum, 'min:', minimum, file=location_file)
+    print('average steps per pokemon:', average / len(p_dict), file=location_file)
+
+
+if __name__ == '__main__':
+
+    while True:
+        number_of_simulations = input('How many iterations of the simulation would you like to run? \nAt least 10000 '
+                                          'is suggested. \nEnter the number, or just press "Enter" to quit: ')
+
+        try:
+            number_of_simulations = int(number_of_simulations)
+        except ValueError:
+            if number_of_simulations == '':
+                print('Thanks for using this program!')
+                quit()
+            else:
+                print()
+                print('Please try again and enter a whole number greater than or equal to 1.')
+                print()
+                continue
+
+        if number_of_simulations >= 1:
+            break
+        elif number_of_simulations < 1:
+            print()
+            print('Please try again and enter a whole number greater than or equal to 1.')
+            print()
+            continue
+
+    location_names = ['Kalos_Route_', 'Santalune_Forest', 'Glittering_Cave', 'Connecting_Cave', 'Reflection_Cave',
+                      'Terminus_Cave', 'Frost_Cavern', 'Azure_Bay', 'Pokemon_Village', 'Lost_Hotel',
+                      'Victory_Road_(Kalos)']
+
+    for location in location_names:
+        if location == 'Kalos_Route_':
+            for route in range(2, 23):
+                route = str(route)
+                area = location + route
+                poke_dict, title = dataDownload(area)
+                calculateSteps(number_of_simulations, poke_dict, title)
+        else:
+            area = location
+            poke_dict, title = dataDownload(area)
+            calculateSteps(number_of_simulations, poke_dict, title)
