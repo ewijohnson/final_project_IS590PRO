@@ -1,4 +1,6 @@
 # Title: 
+Number of Steps to Encounter All Unique Pokemon by Location
+Pokemon X
 
 ## Team Member(s): 
 Eric Johnson
