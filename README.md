@@ -31,8 +31,7 @@ Program took a few minutes to run on my machine when number of simulations was 1
 
 ## All Sources Used:
 bulbapedia.bulbagarden.net, all pages on Pokemon X routes/locations (Kalos):
-bulbapedia.bulbagarden.net/wiki/Kalos_Route_2 
-
+bulbapedia.bulbagarden.net/wiki/Kalos_Route_2 \n 
 bulbapedia.bulbagarden.net/wiki/Kalos_Route_3
 
 ...etc.
