@@ -33,11 +33,10 @@ def dataDownload(location_name):
     print()
     print('----------------------')
     print()
-    print(title[0])
+    print('Calculating', title[0], '...')
 
     # Excludes all Pokemon after the 'Horde Encounter' banner in the tables, extracts all preceding Pokemon, environment
     #   types, and rates of encounter.
-
     pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/text()"
                          "[following::th/a[@title='Horde Encounter']]")
 
@@ -169,8 +168,8 @@ def singleRunThrough(pokemon_dictionary, outfile, sim_number):
         if poke_choice not in pokemon_encountered:
             pokemon_encountered.append(poke_choice)
 
-    print(str(sim_number + 1) + '. ' + 'Total steps:', step_counter, file=outfile)
-    print('    ' + 'Pokemon in order of first encounter:', pokemon_encountered, file=outfile)
+    print(str(sim_number + 1) + '. ' + 'Total steps:', step_counter)    # file=outfile
+    print('    ' + 'Pokemon in order of first encounter:', pokemon_encountered)
 
     return step_counter
 
@@ -187,15 +186,17 @@ def calculateSteps(number_of_sims, poke_dictionary, location_name):
 
     file_name = '_'.join(location_name.split())
     with open(file_name + '.txt', 'w') as f:
-        print('')
-        print(location_name, file=f)
+        print('')   #file=f
+        print(location_name)
         all_step_list = []
         for i in range(number_of_sims):
             total_step_counter = singleRunThrough(poke_dictionary, f, i)
             all_step_list.append(total_step_counter)
 
-        printStats(all_step_list, number_of_sims, poke_dictionary, f)
+        bottom_ten, overall_avg, top_ninety, avg_per_poke = printStats(all_step_list, number_of_sims,
+                                                                       poke_dictionary, f)
 
+    return bottom_ten, overall_avg, top_ninety, avg_per_poke
 
 def printStats(all_steps, sim_number, p_dict, location_file):
     """
@@ -210,18 +211,29 @@ def printStats(all_steps, sim_number, p_dict, location_file):
     ten_percent = int(sim_number * .1)
     sorted_list = sorted(all_steps)
     top_ninety_percent = sorted_list[-ten_percent]
-    max_ten_percent = sum(sorted_list[-ten_percent:]) / len(sorted_list[-ten_percent:])
-    print('\n', file=location_file)
-    print('top 90%:', top_ninety_percent, 'steps', file=location_file)
-    print('average of top 90%:', max_ten_percent, 'steps', file=location_file)
+    avg_top_ninety_percent = sum(sorted_list[-ten_percent:]) / len(sorted_list[-ten_percent:])
+    bottom_ten_percent = sorted_list[ten_percent]
+    avg_bottom_ten_percent = sum(sorted_list[:ten_percent]) / len(sorted_list[:ten_percent])
 
     average = sum(all_steps) / len(all_steps)
+    average_by_pokemon = round(average / len(p_dict), 2)
     maximum = max(all_steps)
     minimum = min(all_steps)
-    print('\n', file=location_file)
-    print('overall average:', average, 'max:', maximum, 'min:', minimum, file=location_file)
-    print('average steps per pokemon:', average / len(p_dict), file=location_file)
 
+    print('\n')     # file=location_file
+    print('min steps:', minimum, '  max steps:', maximum)
+    print('50%:', average, 'steps')
+    print('average steps per pokemon:', average_by_pokemon)
+
+    print('\n')
+    print('top 90%:', top_ninety_percent, '-', maximum, 'steps')
+    print('average of top 90%:', avg_top_ninety_percent, 'steps')
+
+    print('\n')
+    print('bottom 10%:', minimum, '-', bottom_ten_percent, 'steps')
+    print('average of bottom 10%:', avg_bottom_ten_percent, 'steps')
+
+    return bottom_ten_percent, average, top_ninety_percent, average_by_pokemon
 
 if __name__ == '__main__':
 
@@ -249,6 +261,18 @@ if __name__ == '__main__':
             print()
             continue
 
+    lowest_tenth_percentile = 9999999
+    highest_ninetieth_percentile = 0
+    lowest_tenth_percentile_location = ''
+    highest_ninetieth_percentile_location = ''
+    all_averages_list = []
+    all_averages_by_num_of_pokemon_list = []
+    location_averages_dict = {}
+    location_averages_by_pokemon_dict = {}
+    tenth_percentile_dict = {}
+    ninetieth_percentile_dict = {}
+
+
     location_names = ['Kalos_Route_', 'Santalune_Forest', 'Glittering_Cave', 'Connecting_Cave', 'Reflection_Cave',
                       'Terminus_Cave', 'Frost_Cavern', 'Azure_Bay', 'Pokemon_Village', 'Lost_Hotel',
                       'Victory_Road_(Kalos)']
@@ -259,8 +283,61 @@ if __name__ == '__main__':
                 route = str(route)
                 area = location + route
                 poke_dict, title = dataDownload(area)
-                calculateSteps(number_of_simulations, poke_dict, title)
+                tenth_percentile, fiftieth_percentile, ninetieth_percentile, avg_by_num_of_pokemon = \
+                    calculateSteps(number_of_simulations, poke_dict, title)
+
+                if tenth_percentile < lowest_tenth_percentile:
+                    lowest_tenth_percentile = tenth_percentile
+                    lowest_tenth_percentile_location = area
+
+                if ninetieth_percentile > highest_ninetieth_percentile:
+                    highest_ninetieth_percentile = ninetieth_percentile
+                    highest_ninetieth_percentile_location = area
+
+
+                tenth_percentile_dict[area] = tenth_percentile
+                ninetieth_percentile_dict[area] = ninetieth_percentile
+
+                location_averages_dict[area] = fiftieth_percentile
+                location_averages_by_pokemon_dict[area] = avg_by_num_of_pokemon
+
+
         else:
             area = location
             poke_dict, title = dataDownload(area)
-            calculateSteps(number_of_simulations, poke_dict, title)
+            tenth_percentile, fiftieth_percentile, ninetieth_percentile, avg_by_num_of_pokemon = \
+                calculateSteps(number_of_simulations, poke_dict, title)
+
+            if tenth_percentile < lowest_tenth_percentile:
+                lowest_tenth_percentile = tenth_percentile
+                lowest_tenth_percentile_location = area
+
+            if ninetieth_percentile > highest_ninetieth_percentile:
+                highest_ninetieth_percentile = ninetieth_percentile
+                highest_ninetieth_percentile_location = area
+
+            tenth_percentile_dict[area] = tenth_percentile
+            ninetieth_percentile_dict[area] = ninetieth_percentile
+
+            location_averages_dict[area] = fiftieth_percentile
+            location_averages_by_pokemon_dict[area] = avg_by_num_of_pokemon
+
+
+    print()
+    print('Locations sorted by lowest to highest step count, 90th Percentile:')
+    print(sorted(ninetieth_percentile_dict.items(), key=lambda x: x[1]))
+    print()
+    print('Locations sorted by lowest to highest step count, 10th Percentile:')
+    print(sorted(tenth_percentile_dict.items(), key=lambda x: x[1]))
+    print()
+    print('Overall lowest 10th percentile:', lowest_tenth_percentile, 'steps at', lowest_tenth_percentile_location)
+    print('Overall highest 90th percentile:', highest_ninetieth_percentile, 'steps at',
+          highest_ninetieth_percentile_location)
+    print()
+    print('Locations sorted by lowest to highest step count, 50th Percentile:')
+    print(sorted(location_averages_dict.items(), key=lambda x: x[1]))
+    print()
+    print('Locations sorted by lowest to highest average step count per number of Pokemon:')
+    print(sorted(location_averages_by_pokemon_dict.items(), key=lambda x: x[1]))
+
+
