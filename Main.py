@@ -236,8 +236,8 @@ def printStats(all_steps, sim_number, p_dict, location_file):
     return bottom_ten_percent, average, top_ninety_percent, average_by_pokemon, minimum, \
            maximum, avg_bottom_ten_percent, avg_top_ninety_percent
 
-if __name__ == '__main__':
 
+def main():
     while True:
         number_of_simulations = input('How many iterations of the simulation would you like to run? \nAt least 10000 '
                                           'is suggested. \nEnter the number, or just press "Enter" to quit: ')
@@ -266,8 +266,6 @@ if __name__ == '__main__':
     highest_ninetieth_percentile = 0
     lowest_tenth_percentile_location = ''
     highest_ninetieth_percentile_location = ''
-    all_averages_list = []
-    all_averages_by_num_of_pokemon_list = []
     location_averages_dict = {}
     location_averages_by_pokemon_dict = {}
     tenth_percentile_dict = {}
@@ -296,8 +294,8 @@ if __name__ == '__main__':
                     highest_ninetieth_percentile = ninetieth_percentile
                     highest_ninetieth_percentile_location = area
 
-                tenth_percentile_dict[area] = (tenth_percentile, (minimum_steps, 'to', tenth_percentile))
-                ninetieth_percentile_dict[area] = (ninetieth_percentile, (ninetieth_percentile, 'to', maximum_steps))
+                tenth_percentile_dict[area] = (tenth_percentile, (minimum_steps, tenth_percentile))
+                ninetieth_percentile_dict[area] = (ninetieth_percentile, (ninetieth_percentile, maximum_steps))
 
                 avg_tenth_percentile_dict[area] = avg_tenth
                 avg_nintieth_percentile_dict[area] = avg_nintieth
@@ -320,8 +318,8 @@ if __name__ == '__main__':
                 highest_ninetieth_percentile = ninetieth_percentile
                 highest_ninetieth_percentile_location = area
 
-            tenth_percentile_dict[area] = (tenth_percentile, (minimum_steps, 'to', tenth_percentile))
-            ninetieth_percentile_dict[area] = (ninetieth_percentile, (ninetieth_percentile, 'to', maximum_steps))
+            tenth_percentile_dict[area] = (tenth_percentile, (minimum_steps, tenth_percentile))
+            ninetieth_percentile_dict[area] = (ninetieth_percentile, (ninetieth_percentile, maximum_steps))
 
             avg_tenth_percentile_dict[area] = avg_tenth
             avg_nintieth_percentile_dict[area] = avg_nintieth
@@ -334,7 +332,7 @@ if __name__ == '__main__':
         print('', file=file_out)
         print('Locations sorted by lowest to highest step count, 90th Percentile:', file=file_out)
         for item in sorted(ninetieth_percentile_dict.items(), key=lambda x: x[1][0]):
-            print(item[0], 'with', item[1][0], 'steps, and a range of', item[1][1][0], item[1][1][1], item[1][1][2],
+            print(item[0], 'with', item[1][0], 'steps, and a range of', item[1][1][0], '-', item[1][1][1],
                   'steps', file=file_out)
         print('', file=file_out)
         print('Locations sorted by lowest to highest step count, average of the 90th Percentile:', file=file_out)
@@ -343,7 +341,7 @@ if __name__ == '__main__':
         print('', file=file_out)
         print('Locations sorted by lowest to highest step count, 10th Percentile:', file=file_out)
         for item in sorted(tenth_percentile_dict.items(), key=lambda x: x[1][0]):
-            print(item[0], 'with', item[1][0], 'steps, and a range of', item[1][1][0], item[1][1][1], item[1][1][2],
+            print(item[0], 'with', item[1][0], 'steps, and a range of', item[1][1][0], '-', item[1][1][1],
                   'steps', file=file_out)
         print('', file=file_out)
         print('Locations sorted by lowest to highest step count, average of the 10th Percentile:', file=file_out)
@@ -362,3 +360,7 @@ if __name__ == '__main__':
         print('Locations sorted by lowest to highest average step count per number of Pokemon:', file=file_out)
         for item in sorted(location_averages_by_pokemon_dict.items(), key=lambda x: x[1]):
             print(item[0], 'with', item[1], 'steps', file=file_out)
+
+
+if __name__ == '__main__':
+    main()
