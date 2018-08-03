@@ -18,11 +18,14 @@ import random
 def dataDownload(location_name):
     """
     This function gets the relevant information on Pokemon encounters and encounter rates from the Bulbapedia
-    webpage. Returns poke_rate_dict, a dictionary that contains each Pokemon that can be found in the area and its rate
-    of encounter.
+    webpage. The XPath is set up to handle different formats and data on the different webpages that are read. If used
+    for other Pokemon games with other parts of the website, it will probably need to be checked and likely adjusted to
+    account for other XML instances.
 
-    :param location_name:
-    :return:
+    :param location_name: a string that fills in the end of the webpage URL
+    :return: poke_rate_dict: a dict that contains the names of the wild Pokemon in the location that match the test
+    criteria described (no surfing, no horde encounters, etc.) and the rates of encounter for those Pokemon
+    :return: title[0]: the name of the location directly extracted from the webpage
     """
 
     url = 'https://bulbapedia.bulbagarden.net/wiki/' + location_name
@@ -139,12 +142,18 @@ def dataDownload(location_name):
 
 def singleRunThrough(pokemon_dictionary, outfile, sim_number):
     """
-    This function computes one single run through as part of the entire simulation.
+    This function computes one single run through as part of the entire simulation. It calculates one potential outcome
+    for encountering all unique Pokemon in a location based off of the data extracted via XPath earlier. This function
+    is repeated over and over again to create the Monte Carlo simulation.
 
-    :param pokemon_dictionary:
-    :param outfile:
-    :param sim_number:
-    :return:
+    :param pokemon_dictionary: a dict compiled from the earlier function dataDownload() that contains the correct wild
+    Pokemon along with their encounter rates
+    :param outfile: the file that the data is printed to, this is passed through a couple functions so different parts
+    of the data for each location can be added to the correct, single file
+    :param sim_number: the number of iterations that the program is running for. It is passed into this function so that
+    in the outfile, each line of a single run through can be numbered directly in the file for easier reading
+    :return: step_counter: the number of steps that it took to encounter all unique Pokemon in the location
+
     """
 
     number_of_pokemon = len(pokemon_dictionary)
@@ -176,12 +185,28 @@ def singleRunThrough(pokemon_dictionary, outfile, sim_number):
 
 def calculateSteps(number_of_sims, poke_dictionary, location_name):
     """
-    This function calculates the number of steps by computing x number of single runs.
+    This function loops through the singleRunThrough() function number_of_sims times. This combined effect will create a
+    Monte Carlo simulation by getting the step count and adding the step count from each run through to the
+    all_step_list list. It calls the printStats() function that takes the all_step_list and runs various statistical
+    methods on it.
 
-    :param number_of_sims:
-    :param poke_dictionary:
-    :param location_name:
-    :return:
+    The variables that this function return are numerous because that allowed the program to be divided up into more
+    functions. This was a decision that was made, to have more variables being passed around in order for more, smaller
+    functions.
+
+    :param number_of_sims: the number of iterations the simulation will run, input by the user in main()
+    :param poke_dictionary: the dict that contains all available wild Pokemon and their rates of encounter
+    :param location_name: the name of each location
+
+    :return: bottom_ten: cutoff of the 10th Percentile
+    :return: overall_avg: 50th Percentile
+    :return: top_ninety: start of the 90th Percentile
+    :return: avg_per_poke: average steps divided by number of Pokemon in that location
+    :return: minim: absolute minimum step count found
+    :return: maxim: absolute maximum step count found
+    :return: avg_bottom: average of all steps in the bottom 10th Percentile
+    :return: avg_top: average of all steps in the top 90th Percentile
+
     """
 
     file_name = '_'.join(location_name.split())
@@ -200,13 +225,24 @@ def calculateSteps(number_of_sims, poke_dictionary, location_name):
 
 def printStats(all_steps, sim_number, p_dict, location_file):
     """
-    This function calculates and prints all the statistics to separate files.
+    This function calculates and prints all the statistics to separate files. As with the calculateSteps() function, it
+    returns a large number of variables in order to better modularize the program. This was a decision that was made so
+    that the program as a whole could be more readable and more easily understood.
 
-    :param all_steps:
-    :param sim_number:
-    :param p_dict:
-    :param location_file:
-    :return:
+    :param all_steps: the list of all steps counts calculated through running the simulation over and over
+    :param sim_number: the number of times the simulation was done
+    :param p_dict: the dictionary that contains the available wild Pokemon and their encounter rates
+    :param location_file: the name of the location
+
+    :return: bottom_ten_percent: cutoff of the 10th Percentile
+    :return: average: 50th Percentile
+    :return: top_ninety_percent: start of the 90th Percentile
+    :return: average_by_pokemon: average steps divided by number of Pokemon in that location
+    :return: minimum: absolute minimum step count found
+    :return: maximum: absolute maximum step count found
+    :return: avg_bottom_ten_percent: average of all steps in the bottom 10th Percentile
+    :return: avg_top_ninetieth_percent: average of all steps in the top 90th Percentile
+
     """
 
     ten_percent = int(sim_number * .1)
@@ -238,6 +274,18 @@ def printStats(all_steps, sim_number, p_dict, location_file):
 
 
 def checkLowestTenth(tenth, lowest_tenth, lowest_tenth_loc, loc):
+    """
+    This function checks to see if the lowest tenth percentile cutoff for each location is the current lowest. If it
+    is, then it reassigns that step count and location to reflect the new lowest.
+
+    :param tenth: cutoff of the current 10th Percentile
+    :param lowest_tenth: current lowest cutoff for all 10th Percentiles checked so far
+    :param lowest_tenth_loc: current location for the lowest 10th Percentile for on all locations checked so far
+    :param loc: current location that will be checked
+    :return: lowest_tenth: new or current lowest cutoff of all 10th Percentiles from all locations checked so far
+    :return: lowest_tenth_loc: new or current location for the lowest 10th Percentile so far
+
+    """
     if tenth < lowest_tenth:
         lowest_tenth = tenth
         lowest_tenth_loc = loc
@@ -245,6 +293,18 @@ def checkLowestTenth(tenth, lowest_tenth, lowest_tenth_loc, loc):
 
 
 def checkHighestNinetieth(ninetieth, highest_ninetieth, highest_ninetieth_loc, loc):
+    """
+    This function checks to see if the highest ninetieth percentile cutoff for each location is the current highest. If
+    it is, then it reassigns that step count and location to reflect the new highest.
+
+    :param ninetieth: start of the current 90th Percentile
+    :param highest_ninetieth: current highest start for all 90th Percentiles checked so far
+    :param highest_ninetieth_loc: current location for the highest 90th Percentile for all locations checked so far
+    :param loc: current location that will be checked
+    :return: highest_ninetieth: new or current highest start of all 90th Percentiles from all locations checked so far
+    :return: highest_ninetieth_loc: new or current location for the highest 90th Percentile so far
+
+    """
     if ninetieth > highest_ninetieth:
         highest_ninetieth = ninetieth
         highest_ninetieth_loc = loc
@@ -252,6 +312,7 @@ def checkHighestNinetieth(ninetieth, highest_ninetieth, highest_ninetieth_loc, l
 
 
 def main():
+
     while True:
         number_of_simulations = input('How many iterations of the simulation would you like to run? \nAt least 10000 '
                                           'is suggested. \nEnter the number, or just press "Enter" to quit: ')
