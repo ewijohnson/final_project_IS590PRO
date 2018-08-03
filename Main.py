@@ -237,11 +237,24 @@ def printStats(all_steps, sim_number, p_dict, location_file):
            maximum, avg_bottom_ten_percent, avg_top_ninety_percent
 
 
+def checkLowestTenth(tenth, lowest_tenth, lowest_tenth_loc, loc):
+    if tenth < lowest_tenth:
+        lowest_tenth = tenth
+        lowest_tenth_loc = loc
+    return lowest_tenth, lowest_tenth_loc
+
+
+def checkHighestNinetieth(ninetieth, highest_ninetieth, highest_ninetieth_loc, loc):
+    if ninetieth > highest_ninetieth:
+        highest_ninetieth = ninetieth
+        highest_ninetieth_loc = loc
+    return highest_ninetieth, highest_ninetieth_loc
+
+
 def main():
     while True:
         number_of_simulations = input('How many iterations of the simulation would you like to run? \nAt least 10000 '
                                           'is suggested. \nEnter the number, or just press "Enter" to quit: ')
-
         try:
             number_of_simulations = int(number_of_simulations)
         except ValueError:
@@ -286,13 +299,12 @@ def main():
                 tenth_percentile, fiftieth_percentile, ninetieth_percentile, avg_by_num_of_pokemon, minimum_steps, \
                 maximum_steps, avg_tenth, avg_nintieth = calculateSteps(number_of_simulations, poke_dict, title)
 
-                if tenth_percentile < lowest_tenth_percentile:
-                    lowest_tenth_percentile = tenth_percentile
-                    lowest_tenth_percentile_location = area
+                lowest_tenth_percentile, lowest_tenth_percentile_location = \
+                    checkLowestTenth(tenth_percentile, lowest_tenth_percentile, lowest_tenth_percentile_location, area)
 
-                if ninetieth_percentile > highest_ninetieth_percentile:
-                    highest_ninetieth_percentile = ninetieth_percentile
-                    highest_ninetieth_percentile_location = area
+                highest_ninetieth_percentile, highest_ninetieth_percentile_location = \
+                    checkHighestNinetieth(ninetieth_percentile, highest_ninetieth_percentile,
+                                          highest_ninetieth_percentile_location, area)
 
                 tenth_percentile_dict[area] = (tenth_percentile, (minimum_steps, tenth_percentile))
                 ninetieth_percentile_dict[area] = (ninetieth_percentile, (ninetieth_percentile, maximum_steps))
@@ -303,20 +315,18 @@ def main():
                 location_averages_dict[area] = fiftieth_percentile
                 location_averages_by_pokemon_dict[area] = avg_by_num_of_pokemon
 
-
         else:
             area = location
             poke_dict, title = dataDownload(area)
             tenth_percentile, fiftieth_percentile, ninetieth_percentile, avg_by_num_of_pokemon, minimum_steps, \
             maximum_steps, avg_tenth, avg_nintieth = calculateSteps(number_of_simulations, poke_dict, title)
 
-            if tenth_percentile < lowest_tenth_percentile:
-                lowest_tenth_percentile = tenth_percentile
-                lowest_tenth_percentile_location = area
+            lowest_tenth_percentile, lowest_tenth_percentile_location = \
+                checkLowestTenth(tenth_percentile, lowest_tenth_percentile, lowest_tenth_percentile_location, area)
 
-            if ninetieth_percentile > highest_ninetieth_percentile:
-                highest_ninetieth_percentile = ninetieth_percentile
-                highest_ninetieth_percentile_location = area
+            highest_ninetieth_percentile, highest_ninetieth_percentile_location = \
+                checkHighestNinetieth(ninetieth_percentile, highest_ninetieth_percentile,
+                                      highest_ninetieth_percentile_location, area)
 
             tenth_percentile_dict[area] = (tenth_percentile, (minimum_steps, tenth_percentile))
             ninetieth_percentile_dict[area] = (ninetieth_percentile, (ninetieth_percentile, maximum_steps))
