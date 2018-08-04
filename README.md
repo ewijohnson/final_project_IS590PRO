@@ -1,5 +1,4 @@
-# Title: 
-Number of Steps to Encounter All Unique Pokemon by Location: Pokemon X
+# Number of Steps to Encounter All Unique Pokemon by Location: Pokemon X
 
 ## Team Member(s): 
 Eric Johnson
@@ -46,7 +45,7 @@ Program was fast (a minute or two at the most) when only doing 10,000 simulation
 
 The program will create a series of output files, one for each location and one aggregate statistics file. 
 
-The Location files contain data on each of the runs, and AT THE BOTTOM THERE ARE BRIEF AGGREGATE STATISTICS FOR THAT LOCATION ONLY.
+The Location files contain data on each of the runs, and **AT THE BOTTOM THERE ARE BRIEF AGGREGATE STATISTICS FOR THAT LOCATION ONLY**.
 Because of size limits, the Location files uploaded here are for 10,000 simulations, while the aggregate statistics file is for data gathered from 100,000 simulations. While a few numbers may be slightly different, overall the results are nearly identical.
 
 The aggregate statistics file contains data from looking at all locations together, comparing and ranking the locations by various statistical methods. 
