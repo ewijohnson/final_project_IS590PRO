@@ -368,7 +368,7 @@ def createAveragePercentileDict(percentile_dict, location, percentile_data):
     >>> createAveragePercentileDict(percentile_dict, location, percentile_data)
     {'Kalos_Route_100': 410.1}
     """
-    percentile_dict[location] = percentile_data.mean()
+    percentile_dict[location] = round(percentile_data.mean(), 2)
     return percentile_dict
 
 
@@ -395,9 +395,11 @@ def createRangeDict(percentile_dict, location, percentile_data):
 
 def main():
     while True:
-        number_of_simulations = input('How many iterations per location would you like to run? \nAt least 10000 is '
+        number_of_simulations = input('How many iterations per location would you like to run? \nAt least 10,000 are '
                                       'suggested. \nEnter the number, or just press "Enter" to quit: ')
         try:
+            # Allows the user to include commas in their input of the number of simulations
+            number_of_simulations = ''.join(number_of_simulations.split(','))
             number_of_simulations = int(number_of_simulations)
         except ValueError:
             if number_of_simulations == '':
@@ -477,8 +479,9 @@ def main():
             location_averages_by_pokemon_dict[area] = avg_by_num_of_pokemon
 
     # Prints off all aggregate statistics to separate file
-    with open('Kalos_Aggregate_Statistics.txt', 'w') as file_out:
+    with open('Kalos_Aggregate_Statistics_' + str(number_of_simulations) + '_Simulations.txt', 'w') as file_out:
         print('Aggregate Statistics for Kalos, Pokemon X:', file=file_out)
+        print('Number of simulations run:', number_of_simulations, file=file_out)
         print('How many steps does it take to encounter each unique type of Pokemon a minimum of one time in each '
               'location?', file=file_out)
         print('Note: This only includes land-based, single Pokemon encounters, of all combined terrain types per '
@@ -502,7 +505,7 @@ def main():
         for item in sorted(avg_tenth_percentile_dict.items(), key=lambda x: x[1]):
             print(item[0], 'with', item[1], 'steps', file=file_out)
         print('', file=file_out)
-        print('Locations sorted by lowest to highest step count, 50th Percentile:', file=file_out)
+        print('Locations sorted by lowest to highest step count, overall average:', file=file_out)
         for item in sorted(location_averages_dict.items(), key=lambda x: x[1]):
             print(item[0], 'with', item[1], 'steps', file=file_out)
         print('', file=file_out)
