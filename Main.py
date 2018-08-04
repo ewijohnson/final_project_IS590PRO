@@ -9,11 +9,6 @@ import random
 # Combines rates for all environments per location, as the player will not necessarily stay within one type - they will
 #   freely move around all areas per location
 
-# All areas work:
-# Route 2-22, Santalune Forest, Glittering Cave, Connecting Cave, Reflection Cave, Terminus Cave, Frost Cavern,
-#   Azure Bay, Pokemon Village, Lost Hotel, Victory Road
-
-
 
 def dataDownload(location_name):
     """
@@ -26,6 +21,15 @@ def dataDownload(location_name):
     :return: poke_rate_dict: a dict that contains the names of the wild Pokemon in the location that match the test
     criteria described (no surfing, no horde encounters, etc.) and the rates of encounter for those Pokemon
     :return: title[0]: the name of the location directly extracted from the webpage
+
+    >>> location_name = 'Kalos_Route_2'
+    >>> dataDownload(location_name)
+    <BLANKLINE>
+    ----------------------
+    <BLANKLINE>
+    Calculating Kalos Route 2 ...
+    ({'Weedle': 11, 'Pidgey': 14, 'Zigzagoon': 15, 'Fletchling': 20, 'Bunnelby': 20, 'Scatterbug': 20}, 'Kalos Route 2')
+
     """
 
     url = 'https://bulbapedia.bulbagarden.net/wiki/' + location_name
@@ -154,6 +158,16 @@ def singleRunThrough(pokemon_dictionary, outfile, sim_number):
     in the outfile, each line of a single run through can be numbered directly in the file for easier reading
     :return: step_counter: the number of steps that it took to encounter all unique Pokemon in the location
 
+    >>> pokemon_dictionary = {'Zubat': 40, 'Geodude': 20, 'Oddish': 40}
+    >>> outfile = open('Kalos_Route_100.txt', 'w')
+    >>> sim_number = 10
+    >>> a = singleRunThrough(pokemon_dictionary, outfile, sim_number)
+
+    The variable 'a' that is returned represents a random integer. Because it is random, there is not
+    a good way to include it in the doctests. To see possible outcomes for this function, delete everything
+    to the left of and including the equal sign. This will cause the doctest to fail but will provide
+    example outputs for this function.
+
     """
 
     number_of_pokemon = len(pokemon_dictionary)
@@ -196,7 +210,7 @@ def calculateSteps(number_of_sims, poke_dictionary, location_name):
 
     :param number_of_sims: the number of iterations the simulation will run, input by the user in main()
     :param poke_dictionary: the dict that contains all available wild Pokemon and their rates of encounter
-    :param location_name: the name of each location
+    :param location_name: the name of current location
 
     :return: bottom_ten: cutoff of the 10th Percentile
     :return: overall_avg: 50th Percentile
@@ -206,6 +220,15 @@ def calculateSteps(number_of_sims, poke_dictionary, location_name):
     :return: maxim: absolute maximum step count found
     :return: avg_bottom: average of all steps in the bottom 10th Percentile
     :return: avg_top: average of all steps in the top 90th Percentile
+
+    >>> number_of_sims = 10
+    >>> poke_dictionary = {'Zubat': 40, 'Geodude': 20, 'Oddish': 40}
+    >>> location_name = 'Kalos_Route_100'
+    >>> a, b, c, d, e, f, g, h = calculateSteps(number_of_sims, poke_dictionary, location_name)
+
+    The variables a, b, c, d, e, f, g, h represent random numbers. To see some example outputs, this
+    part of the equation (the equal sign and anything to the left) can be deleted; then when doctests
+    are run, they will fail but show possible random outputs.
 
     """
 
@@ -242,6 +265,13 @@ def printStats(all_steps, sim_number, p_dict, location_file):
     :return: maximum: absolute maximum step count found
     :return: avg_bottom_ten_percent: average of all steps in the bottom 10th Percentile
     :return: avg_top_ninetieth_percent: average of all steps in the top 90th Percentile
+
+    >>> all_steps = [132, 144, 670, 490, 40, 566, 765, 334, 423, 537]
+    >>> sim_number = 10
+    >>> p_dict = {'Zubat': 40, 'Geodude': 20, 'Oddish': 40}
+    >>> location_file = open('Kalos_Route_100.txt', 'w')
+    >>> printStats(all_steps, sim_number, p_dict, location_file)
+    (132, 410.1, 765, 136.7, 40, 765, 40.0, 765.0)
 
     """
 
@@ -285,6 +315,13 @@ def checkLowestTenth(tenth, lowest_tenth, lowest_tenth_loc, loc):
     :return: lowest_tenth: new or current lowest cutoff of all 10th Percentiles from all locations checked so far
     :return: lowest_tenth_loc: new or current location for the lowest 10th Percentile so far
 
+    >>> checkLowestTenth(133, 9999999, '', 'Kalos_Route_2')
+    (133, 'Kalos_Route_2')
+    >>> checkLowestTenth(254, 133, 'Kalos_Route_2', 'Kalos_Route_3')
+    (133, 'Kalos_Route_2')
+    >>> checkLowestTenth(47, 133, 'Kalos_Route_2', 'Kalos_Route_13')
+    (47, 'Kalos_Route_13')
+
     """
     if tenth < lowest_tenth:
         lowest_tenth = tenth
@@ -304,6 +341,13 @@ def checkHighestNinetieth(ninetieth, highest_ninetieth, highest_ninetieth_loc, l
     :return: highest_ninetieth: new or current highest start of all 90th Percentiles from all locations checked so far
     :return: highest_ninetieth_loc: new or current location for the highest 90th Percentile so far
 
+    >>> checkHighestNinetieth(433, 0, '', 'Kalos_Route_2')
+    (433, 'Kalos_Route_2')
+    >>> checkHighestNinetieth(1015, 433, 'Kalos_Route_2', 'Kalos_Route_3')
+    (1015, 'Kalos_Route_3')
+    >>> checkHighestNinetieth(192, 1015, 'Kalos_Route_3', 'Kalos_Route_13')
+    (1015, 'Kalos_Route_3')
+
     """
     if ninetieth > highest_ninetieth:
         highest_ninetieth = ninetieth
@@ -312,7 +356,6 @@ def checkHighestNinetieth(ninetieth, highest_ninetieth, highest_ninetieth_loc, l
 
 
 def main():
-
     while True:
         number_of_simulations = input('How many iterations of the simulation would you like to run? \nAt least 10000 '
                                           'is suggested. \nEnter the number, or just press "Enter" to quit: ')
