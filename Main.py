@@ -334,6 +334,65 @@ def printStats(all_steps, sim_number, p_dict, location_file):
     return all_steps, bottom_ten_percent, top_ninety_percent, average_by_pokemon
 
 
+def createPercentileDict(percentile_dict, location, percentile_data):
+    """
+    Creates dictionaries of minimum and maximum values by location to define percentile boundaries
+
+    :param percentile_dict: dictionary that contains data on a percentile (10th, 90th, etc.) associated with locations
+    :param location: location name to be used as dictionary key
+    :param percentile_data: pandas Series that contains data on percentile (10th, 90th, etc.)
+    :return: percentile_dict: after adding another key-value pair of location and data
+
+    >>> percentile_dict = {}
+    >>> location = 'Kalos_Route_100'
+    >>> percentile_data = pd.Series([132, 144, 670, 490, 40, 566, 765, 334, 423, 537])
+    >>> createPercentileDict(percentile_dict, location, percentile_data)
+    {'Kalos_Route_100': (40, 765)}
+    """
+    percentile_dict[location] = (percentile_data.min(), percentile_data.max())
+    return percentile_dict
+
+
+def createAveragePercentileDict(percentile_dict, location, percentile_data):
+    """
+    Creates dictionaries of mean values by location of a given data set (percentiles, all steps, etc.)
+
+    :param percentile_dict: dictionary that contains data on a percentile (10th, 90th, etc.) associated with locations
+    :param location: location name to be used as dictionary key
+    :param percentile_data: pandas Series that contains data on percentile (10th, 90th, all data, etc.)
+    :return: percentile_dict: after adding another key-value pair of location and data
+
+    >>> percentile_dict = {}
+    >>> location = 'Kalos_Route_100'
+    >>> percentile_data = pd.Series([132, 144, 670, 490, 40, 566, 765, 334, 423, 537])
+    >>> createAveragePercentileDict(percentile_dict, location, percentile_data)
+    {'Kalos_Route_100': 410.1}
+    """
+    percentile_dict[location] = percentile_data.mean()
+    return percentile_dict
+
+
+def createRangeDict(percentile_dict, location, percentile_data):
+    """
+    Creates dictionaries of range values, including the min and max values, by location for a set of data
+
+    :param percentile_dict: dictionary that contains data on a percentile (10th, 90th, etc.) associated with locations
+    :param location: location name to be used as dictionary key
+    :param percentile_data: pandas Series that contains data on percentile (10th, 90th, all data, etc.)
+    :return: percentile_dict: after adding another key-value pair of location and data
+
+    >>> percentile_dict = {}
+    >>> location = 'Kalos_Route_100'
+    >>> percentile_data = pd.Series([132, 144, 670, 490, 40, 566, 765, 334, 423, 537])
+    >>> createRangeDict(percentile_dict, location, percentile_data)
+    {'Kalos_Route_100': (725, 40, 765)}
+    """
+
+    percentile_dict[location] = ((percentile_data.max())-(percentile_data.min()), percentile_data.min(),
+                                 percentile_data.max())
+    return percentile_dict
+
+
 def main():
     while True:
         number_of_simulations = input('How many iterations per location would you like to run? \nAt least 10000 is '
@@ -361,12 +420,14 @@ def main():
     print()
     print('Preparing for first data download ...')
 
-    location_averages_dict = {}
-    location_averages_by_pokemon_dict = {}
+    # Sets up empty dictionaries
     tenth_percentile_dict = {}
     ninetieth_percentile_dict = {}
     avg_tenth_percentile_dict = {}
     avg_ninetieth_percentile_dict = {}
+    location_averages_dict = {}
+    location_minmax_dict = {}
+    location_averages_by_pokemon_dict = {}
 
     location_names = ['Kalos_Route_', 'Santalune_Forest', 'Glittering_Cave', 'Connecting_Cave', 'Reflection_Cave',
                       'Terminus_Cave', 'Frost_Cavern', 'Azure_Bay', 'Pokemon_Village', 'Lost_Hotel',
@@ -381,30 +442,41 @@ def main():
                 all_step_data, tenth_percentile, ninetieth_percentile, avg_by_num_of_pokemon = calculateSteps(
                     number_of_simulations, poke_dict, title)
 
-                tenth_percentile_dict[area] = (tenth_percentile.max(), tenth_percentile.min())
-                ninetieth_percentile_dict[area] = (ninetieth_percentile.min(), ninetieth_percentile.max())
+                tenth_percentile_dict = createPercentileDict(tenth_percentile_dict, area, tenth_percentile)
+                ninetieth_percentile_dict = createPercentileDict(ninetieth_percentile_dict, area, ninetieth_percentile)
 
-                avg_tenth_percentile_dict[area] = round(tenth_percentile.mean(), 2)
-                avg_ninetieth_percentile_dict[area] = round(ninetieth_percentile.mean(), 2)
+                avg_tenth_percentile_dict = createAveragePercentileDict(avg_tenth_percentile_dict, area,
+                                                                        tenth_percentile)
+                avg_ninetieth_percentile_dict = createAveragePercentileDict(avg_ninetieth_percentile_dict, area,
+                                                                            ninetieth_percentile)
 
-                location_averages_dict[area] = (round(all_step_data.mean(), 2), all_step_data.min(), all_step_data.max())
+                location_averages_dict = createAveragePercentileDict(location_averages_dict, area, all_step_data)
+
+                location_minmax_dict = createRangeDict(location_minmax_dict, area, all_step_data)
+
                 location_averages_by_pokemon_dict[area] = avg_by_num_of_pokemon
 
+        # For all other locations that aren't a Route
         else:
             area = location
             poke_dict, title = dataDownload(area)
             all_step_data, tenth_percentile, ninetieth_percentile, avg_by_num_of_pokemon = calculateSteps(
                 number_of_simulations, poke_dict, title)
 
-            tenth_percentile_dict[area] = (tenth_percentile.max(), tenth_percentile.min())
-            ninetieth_percentile_dict[area] = (ninetieth_percentile.min(), ninetieth_percentile.max())
+            tenth_percentile_dict = createPercentileDict(tenth_percentile_dict, area, tenth_percentile)
+            ninetieth_percentile_dict = createPercentileDict(ninetieth_percentile_dict, area, ninetieth_percentile)
 
-            avg_tenth_percentile_dict[area] = round(tenth_percentile.mean(), 2)
-            avg_ninetieth_percentile_dict[area] = round(ninetieth_percentile.mean(), 2)
+            avg_tenth_percentile_dict = createAveragePercentileDict(avg_tenth_percentile_dict, area, tenth_percentile)
+            avg_ninetieth_percentile_dict = createAveragePercentileDict(avg_ninetieth_percentile_dict, area,
+                                                                        ninetieth_percentile)
 
-            location_averages_dict[area] = (round(all_step_data.mean(), 2), all_step_data.min(), all_step_data.max())
+            location_averages_dict = createAveragePercentileDict(location_averages_dict, area, all_step_data)
+
+            location_minmax_dict = createRangeDict(location_minmax_dict, area, all_step_data)
+
             location_averages_by_pokemon_dict[area] = avg_by_num_of_pokemon
 
+    # Prints off all aggregate statistics to separate file
     with open('Kalos_Aggregate_Statistics.txt', 'w') as file_out:
         print('Aggregate Statistics for Kalos, Pokemon X:', file=file_out)
         print('How many steps does it take to encounter each unique type of Pokemon a minimum of one time in each '
@@ -422,8 +494,8 @@ def main():
             print(item[0], 'with', item[1], 'steps', file=file_out)
         print('', file=file_out)
         print('Locations sorted by lowest to highest step count, 10th Percentile:', file=file_out)
-        for item in sorted(tenth_percentile_dict.items(), key=lambda x: x[1][0]):
-            print(item[0], 'with', item[1][0], 'steps, and a range of', item[1][1], '-', item[1][0],
+        for item in sorted(tenth_percentile_dict.items(), key=lambda x: x[1][1]):
+            print(item[0], 'with', item[1][1], 'steps, and a range of', item[1][0], '-', item[1][1],
                   'steps', file=file_out)
         print('', file=file_out)
         print('Locations sorted by lowest to highest step count, average of the 10th Percentile:', file=file_out)
@@ -431,13 +503,17 @@ def main():
             print(item[0], 'with', item[1], 'steps', file=file_out)
         print('', file=file_out)
         print('Locations sorted by lowest to highest step count, 50th Percentile:', file=file_out)
-        for item in sorted(location_averages_dict.items(), key=lambda x: x[1][0]):
-            print(item[0], 'with', item[1][0], 'steps, and an overall range of', item[1][1], '-', item[1][2], 'steps',
+        for item in sorted(location_averages_dict.items(), key=lambda x: x[1]):
+            print(item[0], 'with', item[1], 'steps', file=file_out)
+        print('', file=file_out)
+        print('Locations sorted by smallest to largest range of step count values:', file=file_out)
+        for item in sorted(location_minmax_dict.items(), key=lambda x: x[1][0]):
+            print(item[0], 'with a range of', item[1][0], 'steps, ranging from', item[1][1], '-', item[1][2], 'steps',
                   file=file_out)
         print('', file=file_out)
         print('Locations sorted by lowest to highest average step count per number of Pokemon:', file=file_out)
         for item in sorted(location_averages_by_pokemon_dict.items(), key=lambda x: x[1]):
-            print(item[0], 'with', item[1], 'steps', file=file_out)
+            print(item[0], 'with', item[1], 'steps per Pokemon', file=file_out)
 
 
 if __name__ == '__main__':
