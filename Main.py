@@ -19,9 +19,8 @@ def dataDownload(location_name):
     account for other XML instances.
 
     :param location_name: a string that fills in the end of the webpage URL
-
     :return: poke_rate_dict: a dict that contains the names of the wild Pokemon in the location that match the test
-    criteria described (no surfing, no horde encounters, etc.) and the rates of encounter for those Pokemon
+    criteria as described (no surfing, no horde encounters, etc.) and the rates of encounter for each of those Pokemon
     :return: title[0]: the name of the location directly extracted from the webpage
 
     >>> location_name = 'Kalos_Route_2'
@@ -31,7 +30,6 @@ def dataDownload(location_name):
     <BLANKLINE>
     Calculating Kalos Route 2 ...
     ({'Weedle': 11, 'Pidgey': 14, 'Zigzagoon': 15, 'Fletchling': 20, 'Bunnelby': 20, 'Scatterbug': 20}, 'Kalos Route 2')
-
     """
 
     url = 'https://bulbapedia.bulbagarden.net/wiki/' + location_name
@@ -49,7 +47,7 @@ def dataDownload(location_name):
     pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/text()"
                          "[following::th/a[@title='Horde Encounter']]")
 
-    # Need to manually remove the final three Pokemon for Victory Road because of horrible XML
+    # Need to manually remove the final three Pokemon for Victory Road because of webpage XML
     if location_name == 'Victory_Road_(Kalos)':
         pokemon = pokemon[:-3]
 
@@ -61,15 +59,16 @@ def dataDownload(location_name):
     if not swamp_pokemon:
         swamp_pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/"
                                    "span/text()[preceding::th[@style='background: #BDA595; color: #573118']]")
+
     # This is added for cases where there are no Horde Encounters, and therefore the first XPath won't return results
     if not pokemon:
         pokemon = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td/table/tr/td/a/span/"
-                                 "text()")
+                             "text()")
 
-
+    # This extracts the rates of encounter for all Pokemon from the webpage
     rates = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td[@colspan='4']/text()")
 
-    # As with swamp_pokemon, only used if there are Swamp Pokemon
+    # As with swamp_pokemon, only used if there are Swamp Pokemon rates to extract, otherwise will return empty
     swamp_rates = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td[@colspan='4']/text()"
                              "[preceding::th/a/span[text()='Swamp']]")
 
@@ -78,72 +77,108 @@ def dataDownload(location_name):
         swamp_rates = tree.xpath("//tr[@style='text-align:center;']/th/a/span[text()='X']/../../../td[@colspan='4']/"
                                  "text()[preceding::th[@style='background: #BDA595; color: #573118']]")
 
-    cleaned_pokemon_list = []
-    for i, environment in enumerate(pokemon):
-        if environment in ['Fishing', 'Surfing', 'Ceiling', 'Rock\xa0Smash', 'Rustling bush', 'Shaking trash cans']:
-            del pokemon[i-1]
-
-    if swamp_pokemon:
-        for i, environment in enumerate(swamp_pokemon):
-            if environment in ['Fishing', 'Surfing', 'Ceiling', 'Rock\xa0Smash', 'Rustling bush', 'Shaking trash cans']:
-                del swamp_pokemon[i - 1]
-
-    for environment in pokemon:
-        if environment not in ['Surfing', 'Fishing', 'Grass', 'Yellow flowers', 'Red flowers', 'Purple flowers',
-                               'Tall grass', 'Cave', 'Ceiling', 'Rock\xa0Smash', 'Terrain', 'Dirt', 'Swamp', 'Snow',
-                               'Rustling bush', 'Shaking trash cans']:
-            cleaned_pokemon_list.append(environment)
-
-    cleaned_swamp_pokemon_list = []
-    if swamp_pokemon:
-        for environment in swamp_pokemon:
-            if environment not in ['Surfing', 'Fishing', 'Grass', 'Yellow flowers', 'Red flowers', 'Purple flowers',
-                                   'Tall grass', 'Cave', 'Ceiling', 'Rock\xa0Smash', 'Terrain', 'Dirt', 'Swamp', 'Snow',
-                                   'Rustling bush', 'Shaking trash cans']:
-                cleaned_swamp_pokemon_list.append(environment)
-
+    # Sets up empty dictionary that will soon contain all relevant Pokemon and the associated rates of encounter
     poke_rate_dict = {}
 
+    # Cleans up extracted Pokemon/environment data and adds them to a dictionary with associated rates of encounter
+    pokemon = removePokemon(pokemon)
+    cleaned_pokemon_list = removeEnvironmentType(pokemon)
+    poke_rate_dict = createDict(poke_rate_dict, cleaned_pokemon_list, rates)
+
+    # Repeats the above steps if there are Pokemon in the swamp_pokemon list, combines them into the same dict
+    if swamp_pokemon:
+        swamp_pokemon = removePokemon(swamp_pokemon)
+        cleaned_swamp_pokemon_list = removeEnvironmentType(swamp_pokemon)
+        poke_rate_dict = createDict(poke_rate_dict, cleaned_swamp_pokemon_list, swamp_rates)
+
+    return poke_rate_dict, title[0]
+
+
+def removePokemon(full_pokemon_list):
+    """
+    This function removes Pokemon that are not being tested for, based on the environment where they are found.
+
+    :param full_pokemon_list: list of Pokemon and environments that was extracted from the webpage
+    :return: full_pokemon_list: the same list, with any necessary Pokemon removed
+
+    >>> full_pokemon_list = ['Geodude', 'Grass', 'Magikarp', 'Fishing', 'Tentacool', 'Surfing']
+    >>> removePokemon(full_pokemon_list)
+    ['Geodude', 'Grass', 'Fishing', 'Surfing']
+    """
+
+    # List of environment/terrain types that are not being tested for
+    remove_environment_list = ['Fishing', 'Surfing', 'Ceiling', 'Rock\xa0Smash', 'Rustling bush', 'Shaking trash cans']
+
+    for i, environment in enumerate(full_pokemon_list):
+        if environment in remove_environment_list:
+            del full_pokemon_list[i-1]
+
+    return full_pokemon_list
+
+
+def removeEnvironmentType(pokemon_removed_list):
+    """
+    This function takes the reduced list of Pokemon returned by removePokemon(), and removes the names of all
+    environment types, leaving a list of just the relevant Pokemon to be tested. It 'removes' these names by appending
+    the ones being kept to a new list.
+
+    :param pokemon_removed_list: list of Pokemon with some removed from removePokemon() function
+    :return: just_pokemon: list of only the relevant Pokemon, and all environment type names removed
+
+    >>> pokemon_removed_list = ['Geodude', 'Grass', 'Fishing', 'Surfing']
+    >>> removeEnvironmentType(pokemon_removed_list)
+    ['Geodude']
+    """
+
+    # List of all environments to be removed from each Pokemon list before the main simulation
+    all_environment_list = ['Surfing', 'Fishing', 'Grass', 'Yellow flowers', 'Red flowers', 'Purple flowers',
+                            'Tall grass', 'Cave', 'Ceiling', 'Rock\xa0Smash', 'Terrain', 'Dirt', 'Swamp', 'Snow',
+                            'Rustling bush', 'Shaking trash cans']
+    just_pokemon = []
+    for poke_or_environ in pokemon_removed_list:
+        if poke_or_environ not in all_environment_list:
+            just_pokemon.append(poke_or_environ)
+
+    return just_pokemon
+
+
+def createDict(pokemon_dict, pokemon_list, encounter_rates):
+    """
+    This function creates a dictionary associating each Pokemon with its rate of encounter. If there are Pokemon in the
+    swamp_pokemon list, it will effectively combine that list with the other Pokemon list, into a single dictionary.
+
+    :param pokemon_dict: dictionary of Pokemon and their encounter rates
+    :param pokemon_list: list of relevant Pokemon after it has been cleaned
+    :param encounter_rates: list of encounter rates for relevant Pokemon
+    :return: pokemon_dict: now with more key-value pairs of Pokemon:Encounter Rates
+
+    >>> pokemon_dict = {}
+    >>> pokemon_list = ['Bulbasaur', 'Hoothoot', 'Caterpie']
+    >>> encounter_rates = [' 50%\\n', ' 25%\\n', ' 25%\\n']
+    >>> createDict(pokemon_dict, pokemon_list, encounter_rates)
+    {'Bulbasaur': 50, 'Hoothoot': 25, 'Caterpie': 25}
+    """
+
     poke_counter = 0
-    for rate in rates:
+    for rate in encounter_rates:
         rate = (rate.strip().strip('%'))
         try:
             rate = int(rate)
         except ValueError:
             pass
-
-        # This accounts for different 'variations' of the same Pokemon that have different encounter rates.
-        #   All variations of a Pokemon are considered to be the same Pokemon, as supported by the game (one
-        #   'Pokedex' (an in-game Pokemon database) entry per Pokemon, including all variations).
+        # This accounts for different 'variations' of the same Pokemon that have different encounter rates, such as
+        #   different colors of one Pokemon. All variations of a Pokemon are considered to be the same Pokemon, as
+        #   supported by the game (one 'Pokedex' (an in-game Pokemon database) entry per Pokemon, including all
+        #   variations).
         try:
-            poke_rate_dict[(cleaned_pokemon_list[poke_counter])] += rate
+            pokemon_dict[(pokemon_list[poke_counter])] += rate
         except IndexError:
             pass
         except KeyError:
-            poke_rate_dict[(cleaned_pokemon_list[poke_counter])] = rate
+            pokemon_dict[(pokemon_list[poke_counter])] = rate
         poke_counter += 1
 
-    if swamp_pokemon:
-        poke_counter = 0
-        for rate in swamp_rates:
-            rate = (rate.strip().strip('%'))
-            try:
-                rate = int(rate)
-            except ValueError:
-                pass
-
-            # This accounts for different 'variations' of the same Pokemon that have different encounter rates.
-            #   All variations of a Pokemon are considered to be the same Pokemon, as supported by the game (one
-            #   'Pokedex' (an in-game Pokemon database) entry per Pokemon, including all variations).
-            try:
-                poke_rate_dict[(cleaned_swamp_pokemon_list[poke_counter])] += rate
-            except IndexError:
-                pass
-            except KeyError:
-                poke_rate_dict[(cleaned_swamp_pokemon_list[poke_counter])] = rate
-            poke_counter += 1
-
-    return poke_rate_dict, title[0]
+    return pokemon_dict
 
 
 def singleRunThrough(pokemon_dictionary, outfile, sim_number):
@@ -158,7 +193,6 @@ def singleRunThrough(pokemon_dictionary, outfile, sim_number):
     of the data for each location can be added to the correct, single file
     :param sim_number: the number of iterations that the program is running for. It is passed into this function so that
     in the outfile, each line of a single run through can be numbered directly in the file for easier reading
-
     :return: step_counter: the number of steps that it took to encounter all unique Pokemon in the location
 
     >>> pokemon_dictionary = {'Zubat': 40, 'Geodude': 20, 'Oddish': 40}
@@ -166,11 +200,9 @@ def singleRunThrough(pokemon_dictionary, outfile, sim_number):
     >>> sim_number = 10
     >>> a = singleRunThrough(pokemon_dictionary, outfile, sim_number)
 
-    The variable 'a' that is returned represents a random integer. Because it is random, there is not
-    a good way to include it in the doctests. To see possible outcomes for this function, delete everything
-    to the left of and including the equal sign. This will cause the doctest to fail but will provide
-    example outputs for this function.
-
+    The variable 'a' that is returned represents a random integer. Because it is random, there is not a good way to
+    include it in the doctests. To see possible outcomes for this function, delete everything to the left of and
+    including the equal sign. This will cause the doctest to fail but will provide example outputs for this function.
     """
 
     number_of_pokemon = len(pokemon_dictionary)
@@ -210,7 +242,6 @@ def calculateSteps(number_of_sims, poke_dictionary, location_name):
     :param number_of_sims: the number of iterations the simulation will run, input by the user in main()
     :param poke_dictionary: the dict that contains all available wild Pokemon and their rates of encounter
     :param location_name: the name of current location
-
     :return: all_step_series: pandas Series that contains all the step counts for one location
     :return: bottom_ten: Series of the 10th percentile of all_step_series
     :return: top_ninety: Series of the 90th percentile of all_step_series
@@ -225,7 +256,6 @@ def calculateSteps(number_of_sims, poke_dictionary, location_name):
     integer that represents the average steps divided by the number of Pokemon in that location. To see some example
     outputs, the equals sign and anything to the left can be deleted; then when doctests are run, they will fail but
     show possible random outputs.
-
     """
 
     file_name = '_'.join(location_name.split())
@@ -254,7 +284,6 @@ def printStats(all_steps, sim_number, p_dict, location_file):
     :param sim_number: the number of times the simulation was done
     :param p_dict: the dictionary that contains the available wild Pokemon and their encounter rates
     :param location_file: the name of the location
-
     :return: all_steps: pandas Series that contains all the step counts for one location
     :return: bottom_ten_percent: Series of the 10th percentile of all_steps
     :return: top_ninety_percent: Series of the 90th percentile of all_steps
@@ -278,7 +307,6 @@ def printStats(all_steps, sim_number, p_dict, location_file):
     dtype: int64, 4    40
     dtype: int64, 6    765
     dtype: int64, 136.7)
-
     """
 
     ten_percent = int(sim_number * .1)
