@@ -1,7 +1,6 @@
 # Number of Steps to Encounter All Unique Pokemon by Location: Pokemon X
 
-## Team Member(s): 
-Eric Johnson
+## Team Member(s): Eric Johnson
 
 # Monte Carlo Simulation Scenario & Purpose:
 This simulation looks at the Pokemon video games, specifically Pokemon X. It will determine the minimum, maximum, and overall average number of steps (along with other statistics) it takes for the player to encounter at least one of every Pokemon that can be found in each location by walking. This will exclude Pokemon encountered in the following ways: Surfing, Fishing, Horde Encounters, Rock Smash, Rustling Bush, and Ceiling. It will include all locations in Pokemon X: Routes 2-22 (Route 1 has no wild Pokemon), Santalune Forest, Glittering Cave, Connecting Cave, Reflection Cave, Terminus Cave, Frost Cavern, Azure Bay, Pokemon Village, Lost Hotel, and Victory Road. After data on each location has been gathered, statistics from the game as a whole will be calculated.
