@@ -1,0 +1,235 @@
+Aggregate Statistics for Kalos, Pokemon X:
+Number of simulations run: 100000
+How many steps does it take to encounter each unique type of Pokemon a minimum of one time in each location?
+Note: This only includes land-based, single Pokemon encounters, of all combined terrain types per location.
+
+Locations sorted by lowest to highest step count, 90th Percentile:
+Kalos_Route_9 with 191 steps, and a range of 191 - 1341 steps
+Kalos_Route_13 with 191 steps, and a range of 191 - 957 steps
+Terminus_Cave with 264 steps, and a range of 264 - 1069 steps
+Lost_Hotel with 303 steps, and a range of 303 - 1083 steps
+Connecting_Cave with 374 steps, and a range of 374 - 1993 steps
+Kalos_Route_21 with 398 steps, and a range of 398 - 1999 steps
+Azure_Bay with 407 steps, and a range of 407 - 1903 steps
+Kalos_Route_2 with 432 steps, and a range of 432 - 1542 steps
+Pokemon_Village with 445 steps, and a range of 445 - 2013 steps
+Kalos_Route_15 with 449 steps, and a range of 449 - 1814 steps
+Kalos_Route_16 with 633 steps, and a range of 633 - 2267 steps
+Kalos_Route_7 with 656 steps, and a range of 656 - 2442 steps
+Kalos_Route_20 with 754 steps, and a range of 754 - 3292 steps
+Kalos_Route_10 with 775 steps, and a range of 775 - 3399 steps
+Kalos_Route_6 with 777 steps, and a range of 777 - 4074 steps
+Victory_Road_(Kalos) with 778 steps, and a range of 778 - 4546 steps
+Kalos_Route_8 with 779 steps, and a range of 779 - 3601 steps
+Kalos_Route_18 with 786 steps, and a range of 786 - 4321 steps
+Kalos_Route_4 with 795 steps, and a range of 795 - 3258 steps
+Reflection_Cave with 799 steps, and a range of 799 - 3550 steps
+Kalos_Route_14 with 856 steps, and a range of 856 - 4389 steps
+Frost_Cavern with 947 steps, and a range of 947 - 4841 steps
+Kalos_Route_12 with 973 steps, and a range of 973 - 3992 steps
+Kalos_Route_5 with 985 steps, and a range of 985 - 3873 steps
+Kalos_Route_3 with 990 steps, and a range of 990 - 3876 steps
+Kalos_Route_11 with 994 steps, and a range of 994 - 4026 steps
+Glittering_Cave with 997 steps, and a range of 997 - 4413 steps
+Kalos_Route_19 with 1030 steps, and a range of 1030 - 4254 steps
+Santalune_Forest with 1059 steps, and a range of 1059 - 4807 steps
+Kalos_Route_22 with 1199 steps, and a range of 1199 - 4816 steps
+Kalos_Route_17 with 3817 steps, and a range of 3817 - 20497 steps
+
+Locations sorted by lowest to highest step count, average of the 90th Percentile:
+Kalos_Route_13 with 262.46 steps
+Kalos_Route_9 with 262.93 steps
+Terminus_Cave with 340.86 steps
+Lost_Hotel with 380.38 steps
+Connecting_Cave with 529.91 steps
+Kalos_Route_21 with 545.06 steps
+Azure_Bay with 555.91 steps
+Kalos_Route_2 with 556.04 steps
+Pokemon_Village with 582.09 steps
+Kalos_Route_15 with 584.95 steps
+Kalos_Route_16 with 796.96 steps
+Kalos_Route_7 with 818.83 steps
+Kalos_Route_20 with 1068.4 steps
+Kalos_Route_6 with 1084.5 steps
+Kalos_Route_8 with 1086.06 steps
+Kalos_Route_10 with 1088.94 steps
+Victory_Road_(Kalos) with 1090.88 steps
+Kalos_Route_18 with 1096.25 steps
+Kalos_Route_4 with 1097.31 steps
+Reflection_Cave with 1105.71 steps
+Kalos_Route_14 with 1136.05 steps
+Kalos_Route_12 with 1292.83 steps
+Kalos_Route_3 with 1304.9 steps
+Kalos_Route_5 with 1308.13 steps
+Glittering_Cave with 1309.7 steps
+Kalos_Route_11 with 1309.87 steps
+Kalos_Route_19 with 1336.94 steps
+Frost_Cavern with 1356.33 steps
+Santalune_Forest with 1427.44 steps
+Kalos_Route_22 with 1521.31 steps
+Kalos_Route_17 with 5439.33 steps
+
+Locations sorted by lowest to highest step count, 10th Percentile:
+Kalos_Route_9 with 44 steps, and a range of 4 - 44 steps
+Kalos_Route_13 with 44 steps, and a range of 4 - 44 steps
+Terminus_Cave with 71 steps, and a range of 7 - 71 steps
+Connecting_Cave with 75 steps, and a range of 7 - 75 steps
+Azure_Bay with 80 steps, and a range of 4 - 80 steps
+Lost_Hotel with 96 steps, and a range of 17 - 96 steps
+Kalos_Route_21 with 103 steps, and a range of 21 - 103 steps
+Kalos_Route_2 with 133 steps, and a range of 29 - 133 steps
+Kalos_Route_15 with 134 steps, and a range of 25 - 134 steps
+Pokemon_Village with 134 steps, and a range of 30 - 134 steps
+Kalos_Route_20 with 150 steps, and a range of 36 - 150 steps
+Frost_Cavern with 156 steps, and a range of 39 - 156 steps
+Kalos_Route_6 with 159 steps, and a range of 23 - 159 steps
+Victory_Road_(Kalos) with 160 steps, and a range of 29 - 160 steps
+Kalos_Route_4 with 169 steps, and a range of 27 - 169 steps
+Kalos_Route_10 with 184 steps, and a range of 47 - 184 steps
+Kalos_Route_8 with 185 steps, and a range of 46 - 185 steps
+Kalos_Route_18 with 187 steps, and a range of 54 - 187 steps
+Kalos_Route_16 with 191 steps, and a range of 47 - 191 steps
+Reflection_Cave with 191 steps, and a range of 52 - 191 steps
+Kalos_Route_17 with 192 steps, and a range of 15 - 192 steps
+Kalos_Route_12 with 212 steps, and a range of 56 - 212 steps
+Kalos_Route_7 with 219 steps, and a range of 67 - 219 steps
+Kalos_Route_5 with 246 steps, and a range of 69 - 246 steps
+Kalos_Route_3 with 252 steps, and a range of 74 - 252 steps
+Kalos_Route_11 with 252 steps, and a range of 72 - 252 steps
+Kalos_Route_14 with 264 steps, and a range of 60 - 264 steps
+Glittering_Cave with 266 steps, and a range of 82 - 266 steps
+Santalune_Forest with 291 steps, and a range of 87 - 291 steps
+Kalos_Route_19 with 296 steps, and a range of 86 - 296 steps
+Kalos_Route_22 with 377 steps, and a range of 104 - 377 steps
+
+Locations sorted by lowest to highest step count, average of the 10th Percentile:
+Kalos_Route_13 with 33.74 steps
+Kalos_Route_9 with 34.02 steps
+Terminus_Cave with 57.0 steps
+Connecting_Cave with 59.45 steps
+Azure_Bay with 63.4 steps
+Lost_Hotel with 79.03 steps
+Kalos_Route_21 with 83.61 steps
+Kalos_Route_2 with 109.68 steps
+Kalos_Route_15 with 110.23 steps
+Pokemon_Village with 110.71 steps
+Kalos_Route_17 with 122.12 steps
+Kalos_Route_20 with 122.88 steps
+Frost_Cavern with 126.21 steps
+Kalos_Route_6 with 128.28 steps
+Victory_Road_(Kalos) with 128.6 steps
+Kalos_Route_4 with 135.29 steps
+Kalos_Route_10 with 152.48 steps
+Kalos_Route_8 with 152.83 steps
+Kalos_Route_18 with 153.92 steps
+Reflection_Cave with 157.11 steps
+Kalos_Route_16 with 157.25 steps
+Kalos_Route_12 with 171.34 steps
+Kalos_Route_7 with 184.28 steps
+Kalos_Route_5 with 202.16 steps
+Kalos_Route_3 with 206.68 steps
+Kalos_Route_11 with 207.7 steps
+Glittering_Cave with 218.03 steps
+Kalos_Route_14 with 222.27 steps
+Santalune_Forest with 241.26 steps
+Kalos_Route_19 with 244.66 steps
+Kalos_Route_22 with 316.92 steps
+
+Locations sorted by lowest to highest step count, overall average:
+Kalos_Route_13 with 105.97 steps
+Kalos_Route_9 with 106.03 steps
+Terminus_Cave with 155.2 steps
+Lost_Hotel with 188.23 steps
+Connecting_Cave with 195.79 steps
+Azure_Bay with 216.89 steps
+Kalos_Route_21 with 228.5 steps
+Kalos_Route_2 with 263.82 steps
+Pokemon_Village with 269.65 steps
+Kalos_Route_15 with 270.91 steps
+Kalos_Route_16 with 385.89 steps
+Kalos_Route_20 with 393.09 steps
+Kalos_Route_7 with 412.85 steps
+Kalos_Route_6 with 413.77 steps
+Victory_Road_(Kalos) with 414.76 steps
+Kalos_Route_10 with 428.78 steps
+Kalos_Route_8 with 431.99 steps
+Kalos_Route_4 with 433.11 steps
+Kalos_Route_18 with 435.55 steps
+Reflection_Cave with 446.75 steps
+Frost_Cavern with 462.51 steps
+Kalos_Route_14 with 522.5 steps
+Kalos_Route_12 with 533.27 steps
+Kalos_Route_5 with 560.21 steps
+Kalos_Route_3 with 568.42 steps
+Kalos_Route_11 with 569.13 steps
+Glittering_Cave with 580.09 steps
+Kalos_Route_19 with 614.95 steps
+Santalune_Forest with 619.53 steps
+Kalos_Route_22 with 735.63 steps
+Kalos_Route_17 with 1659.2 steps
+
+Locations sorted by smallest to largest range of step count values:
+Kalos_Route_13 with a range of 953 steps, ranging from 4 - 957 steps
+Terminus_Cave with a range of 1062 steps, ranging from 7 - 1069 steps
+Lost_Hotel with a range of 1066 steps, ranging from 17 - 1083 steps
+Kalos_Route_9 with a range of 1337 steps, ranging from 4 - 1341 steps
+Kalos_Route_2 with a range of 1513 steps, ranging from 29 - 1542 steps
+Kalos_Route_15 with a range of 1789 steps, ranging from 25 - 1814 steps
+Azure_Bay with a range of 1899 steps, ranging from 4 - 1903 steps
+Kalos_Route_21 with a range of 1978 steps, ranging from 21 - 1999 steps
+Pokemon_Village with a range of 1983 steps, ranging from 30 - 2013 steps
+Connecting_Cave with a range of 1986 steps, ranging from 7 - 1993 steps
+Kalos_Route_16 with a range of 2220 steps, ranging from 47 - 2267 steps
+Kalos_Route_7 with a range of 2375 steps, ranging from 67 - 2442 steps
+Kalos_Route_4 with a range of 3231 steps, ranging from 27 - 3258 steps
+Kalos_Route_20 with a range of 3256 steps, ranging from 36 - 3292 steps
+Kalos_Route_10 with a range of 3352 steps, ranging from 47 - 3399 steps
+Reflection_Cave with a range of 3498 steps, ranging from 52 - 3550 steps
+Kalos_Route_8 with a range of 3555 steps, ranging from 46 - 3601 steps
+Kalos_Route_3 with a range of 3802 steps, ranging from 74 - 3876 steps
+Kalos_Route_5 with a range of 3804 steps, ranging from 69 - 3873 steps
+Kalos_Route_12 with a range of 3936 steps, ranging from 56 - 3992 steps
+Kalos_Route_11 with a range of 3954 steps, ranging from 72 - 4026 steps
+Kalos_Route_6 with a range of 4051 steps, ranging from 23 - 4074 steps
+Kalos_Route_19 with a range of 4168 steps, ranging from 86 - 4254 steps
+Kalos_Route_18 with a range of 4267 steps, ranging from 54 - 4321 steps
+Kalos_Route_14 with a range of 4329 steps, ranging from 60 - 4389 steps
+Glittering_Cave with a range of 4331 steps, ranging from 82 - 4413 steps
+Victory_Road_(Kalos) with a range of 4517 steps, ranging from 29 - 4546 steps
+Kalos_Route_22 with a range of 4712 steps, ranging from 104 - 4816 steps
+Santalune_Forest with a range of 4720 steps, ranging from 87 - 4807 steps
+Frost_Cavern with a range of 4802 steps, ranging from 39 - 4841 steps
+Kalos_Route_17 with a range of 20482 steps, ranging from 15 - 20497 steps
+
+Locations sorted by lowest to highest average step count per number of Pokemon:
+Kalos_Route_13 with 35.32 steps per Pokemon
+Kalos_Route_9 with 35.34 steps per Pokemon
+Lost_Hotel with 37.65 steps per Pokemon
+Terminus_Cave with 38.8 steps per Pokemon
+Kalos_Route_2 with 43.97 steps per Pokemon
+Pokemon_Village with 44.94 steps per Pokemon
+Kalos_Route_15 with 45.15 steps per Pokemon
+Kalos_Route_21 with 45.7 steps per Pokemon
+Connecting_Cave with 48.95 steps per Pokemon
+Kalos_Route_7 with 51.61 steps per Pokemon
+Azure_Bay with 54.22 steps per Pokemon
+Kalos_Route_16 with 55.13 steps per Pokemon
+Kalos_Route_14 with 58.06 steps per Pokemon
+Kalos_Route_10 with 61.25 steps per Pokemon
+Kalos_Route_8 with 61.71 steps per Pokemon
+Kalos_Route_18 with 62.22 steps per Pokemon
+Reflection_Cave with 63.82 steps per Pokemon
+Kalos_Route_20 with 65.52 steps per Pokemon
+Kalos_Route_22 with 66.88 steps per Pokemon
+Kalos_Route_19 with 68.33 steps per Pokemon
+Santalune_Forest with 68.84 steps per Pokemon
+Kalos_Route_6 with 68.96 steps per Pokemon
+Victory_Road_(Kalos) with 69.13 steps per Pokemon
+Kalos_Route_5 with 70.03 steps per Pokemon
+Kalos_Route_3 with 71.05 steps per Pokemon
+Kalos_Route_11 with 71.14 steps per Pokemon
+Kalos_Route_4 with 72.18 steps per Pokemon
+Glittering_Cave with 72.51 steps per Pokemon
+Kalos_Route_12 with 76.18 steps per Pokemon
+Frost_Cavern with 77.08 steps per Pokemon
+Kalos_Route_17 with 414.8 steps per Pokemon
